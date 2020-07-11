@@ -4,4 +4,4 @@
 ### Project Structure
 This git repo consists of a `client` and a `server` directory.
 - server is written in Python
-- client is written in ?
+- client is written in Golang
