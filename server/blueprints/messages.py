@@ -1,9 +1,12 @@
-from flask import Flask, Blueprint, request
+from sys import argv
+from flask import Flask, Blueprint, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from models import message
+from internal import CheckToken
 import traceback
 import pytz
+import json
 
 messages = Blueprint('messages', __name__)
 db = SQLAlchemy()
@@ -11,6 +14,7 @@ db = SQLAlchemy()
 @messages.route('/messages', methods=['POST'])
 def send_message():
     if request.method == 'POST':
+        CheckToken(request.headers.get("Authorization"))
         data_username = str(request.json['user'])
         data_message = str(request.json['message'])
 
@@ -28,6 +32,10 @@ def send_message():
 @messages.route('/messages/fetch')
 def get_messages():
     if request.method == 'GET':
-        return str(database)
+        CheckToken(request.headers.get("Authorization"))
+        db_messages = message.query.order_by(message.sent_at.desc()).all()
+        return jsonify({
+            "messages": db_messages
+        })
     else:
         return "Method not allowed"

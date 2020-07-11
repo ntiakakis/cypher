@@ -1,5 +1,9 @@
 package main
 
+import (
+	"edpasenidis.tech/cypher/internal"
+)
+
 func main() {
-	print("")
+	internal.Login()
 }

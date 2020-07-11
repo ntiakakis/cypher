@@ -1,27 +1,36 @@
-package main
+package internal
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
+	"net/http"
 
 	"github.com/marcusolsson/tui-go"
 )
 
-func main() {
+func Login() {
 	user := tui.NewEntry()
 	user.SetFocused(true)
 
 	password := tui.NewEntry()
 	password.SetEchoMode(tui.EchoModePassword)
 
+	room := tui.NewEntry()
+
 	form := tui.NewGrid(0, 0)
 	form.AppendRow(tui.NewLabel("User"), tui.NewLabel("Password"))
 	form.AppendRow(user, password)
+
+	form.AppendRow(tui.NewLabel("Room"))
+	form.AppendRow(room)
 
 	status := tui.NewStatusBar("Ready.")
 
 	login := tui.NewButton("[Login]")
 	login.OnActivated(func(b *tui.Button) {
-		status.SetText("Logged in.")
+		req, err := http.Post("url", "application/json", bytes.NewBuffer(json.Marshal(map[string]string{"": "blah"}))
+		// status.SetText("Logged in.")
 	})
 
 	register := tui.NewButton("[Register]")

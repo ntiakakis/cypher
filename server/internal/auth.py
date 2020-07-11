@@ -1,6 +1,8 @@
 import itsdangerous
 import base64
 import binascii
+import os
+from dotenv import load_dotenv
 from .errors import Unauthorized, Forbidden, Ratelimited
 
 def check_token(token):
@@ -13,6 +15,6 @@ def check_token(token):
         raise Unauthorized("Invalid token")
 
     try:
-        itsdangerous.TimestampSigner(app.config["SECRET_KEY"].unsign(token, max_age=60*60*24))
+        itsdangerous.TimestampSigner(os.getenv("TOKEN_SECRET")).unsign(token, max_age=60*60*24)
     except itsdangerous.BadSignature:
         raise Forbidden("Invalid token")

@@ -29,10 +29,6 @@ def register():
     else:
         return "Method not allowed."
 
-@users.route('/users/login', methods=['POST'])
-def login():
-    print('a')
-
 @users.route('/users/fetch', methods=['GET'])
 def list_users():
     if request.method == 'GET':
