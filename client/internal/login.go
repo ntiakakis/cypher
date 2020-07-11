@@ -23,6 +23,8 @@ func Login() {
 	password := tui.NewEntry()
 	password.SetEchoMode(tui.EchoModePassword)
 
+	email := tui.NewEntry()
+
 	room := tui.NewEntry()
 
 	form := tui.NewGrid(0, 0)
@@ -40,7 +42,19 @@ func Login() {
 		status.SetText(auth.Login(room.Text(), user.Text(), password.Text()))
 	})
 
+	havesAccount := false
 	register := tui.NewButton("[Register]")
+	register.OnActivated(func(b *tui.Button) {
+		if !havesAccount {
+			havesAccount = true
+			status.SetText("Write your e-mail to register.")
+			form.AppendRow(tui.NewLabel("Email"))
+			form.AppendRow(email)
+			email.SetFocused(true)
+		} else {
+			status.SetText(auth.Register(room.Text(), user.Text(), password.Text(), email.Text()))
+		}
+	})
 
 	buttons := tui.NewHBox(
 		tui.NewSpacer(),

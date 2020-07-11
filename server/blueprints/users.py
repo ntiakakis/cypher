@@ -14,18 +14,27 @@ db = SQLAlchemy()
 @users.route('/users/register', methods=['POST'])
 def register():
     if request.method == 'POST':
-        data_username = request.json['username']
-        data_password = request.json['password']
-        data_email = request.json['email']
+        if (request.json['username'] is None 
+                or request.json['password'] is None 
+                or request.json['email'] is None 
+                or request.json['email'] == '' 
+                or request.json['password'] == '' 
+                or request.json['username'] == ''):
+            return "One or more of the required fields are missing"
+        else:
+            print(request.json)
+            data_username = request.json['username']
+            data_password = request.json['password']
+            data_email = request.json['email']
 
-        try:
-            current_user = user(username=data_username, password=data_password, email=data_email)
-            db.session.add(current_user)
-            db.session.commit()    
-            return "Request sent."
-        except:
-            traceback.print_exc()
-            return "Something went wrong."
+            try:
+                current_user = user(username=data_username, password=data_password, email=data_email)
+                db.session.add(current_user)
+                db.session.commit()    
+                return "Registered! You can now login."
+            except:
+                traceback.print_exc()
+                return "Something went wrong."
     else:
         return "Method not allowed."
 
