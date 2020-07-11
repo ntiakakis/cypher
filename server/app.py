@@ -22,17 +22,22 @@ def validate():
     CheckToken(request.headers.get("Authorization"))
     return "", 204
 
-@app.route("/auth/generate")
+@app.route("/auth/generate", methods=['POST'])
 def generate():
-    data_user = request.json['username']
-    data_password = request.json['password']
-    try:
-        current_user = User.query.filter_by(username=data_user).first()
-        if current_user and current_user.password == data_password:
-            return jsonify({"token": itsdangerous.TimestampSigner(app.config["SECRET_KEY"]).sign("cyphchat").decode()})
-    except:
-        traceback.print_exc()
-        return "Something went wrong..", 400
+    if request.method == 'POST':
+        data_user = request.json['username']
+        data_password = request.json['password']
+        try:
+            current_user = User.query.filter_by(username=data_user).first()
+            if current_user and current_user.password == data_password:
+                return jsonify({"token": itsdangerous.TimestampSigner(app.config["SECRET_KEY"]).sign("cyphchat").decode()})
+            else:
+                return "Wrong credentials."
+        except:
+            traceback.print_exc()
+            return "Something went wrong..", 400
+    else:
+        return "Method not allowed", 400
 
 app.register_blueprint(messages)
 app.register_blueprint(users)

@@ -1,15 +1,22 @@
 package internal
 
 import (
-	"bytes"
-	"encoding/json"
 	"log"
-	"net/http"
 
+	"edpasenidis.tech/cypher/internal/auth"
 	"github.com/marcusolsson/tui-go"
 )
 
 func Login() {
+	logo := `
+                   _                 
+                  | |                
+  ____ _   _ ____ | | _   ____  ____ 
+ / ___) | | |  _ \| || \ / _  )/ ___)
+( (___| |_| | | | | | | ( (/ /| |    
+ \____)\__  | ||_/|_| |_|\____)_|    
+      (____/|_|                      
+`
 	user := tui.NewEntry()
 	user.SetFocused(true)
 
@@ -22,15 +29,15 @@ func Login() {
 	form.AppendRow(tui.NewLabel("User"), tui.NewLabel("Password"))
 	form.AppendRow(user, password)
 
-	form.AppendRow(tui.NewLabel("Room"))
+	form.AppendRow(tui.NewLabel("Server"))
 	form.AppendRow(room)
 
 	status := tui.NewStatusBar("Ready.")
 
 	login := tui.NewButton("[Login]")
 	login.OnActivated(func(b *tui.Button) {
-		req, err := http.Post("url", "application/json", bytes.NewBuffer(json.Marshal(map[string]string{"": "blah"}))
-		// status.SetText("Logged in.")
+		status.SetText("Logging in...")
+		status.SetText(auth.Login(room.Text(), user.Text(), password.Text()))
 	})
 
 	register := tui.NewButton("[Register]")
@@ -42,7 +49,7 @@ func Login() {
 	)
 
 	window := tui.NewVBox(
-		// tui.NewPadder(10, 1, tui.NewLabel(logo)),
+		tui.NewPadder(10, 1, tui.NewLabel(logo)),
 		tui.NewPadder(12, 0, tui.NewLabel("Welcome to Cypher! Login or register.")),
 		tui.NewPadder(1, 1, form),
 		buttons,
@@ -61,7 +68,7 @@ func Login() {
 		status,
 	)
 
-	tui.DefaultFocusChain.Set(user, password, login, register)
+	tui.DefaultFocusChain.Set(user, password, room, login, register)
 
 	ui, err := tui.New(root)
 	if err != nil {
