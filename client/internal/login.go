@@ -8,11 +8,19 @@ import (
 	"github.com/marcusolsson/tui-go"
 )
 
+// LoginTokenBody ... Login response
 type LoginTokenBody struct {
-	Token string
+	Token string `json:"token"`
 }
 
-func Login() {
+// Credentials ... Credential
+type Credentials struct {
+	Token  string
+	Domain string
+}
+
+// Login ... User login
+func Login() Credentials {
 	logo := `
                    _                 
                   | |                
@@ -41,16 +49,17 @@ func Login() {
 
 	status := tui.NewStatusBar("Ready.")
 
+	var data LoginTokenBody
+
 	login := tui.NewButton("[Login]")
 	login.OnActivated(func(b *tui.Button) {
 		status.SetText("Logging in...")
-		var data LoginTokenBody
 		err := json.Unmarshal([]byte(auth.Login(room.Text(), user.Text(), password.Text())), &data)
 		if err != nil {
 			status.SetText(err.Error())
 			return
 		}
-		status.SetText(data.Token)
+		status.SetText("Press enter again to log-in.")
 	})
 
 	havesAccount := false
@@ -102,8 +111,15 @@ func Login() {
 	}
 
 	ui.SetKeybinding("Esc", func() { ui.Quit() })
+	ui.SetKeybinding("Enter", func() {
+		if len(data.Token) >= 10 {
+			ui.Quit()
+		}
+	})
 
 	if err := ui.Run(); err != nil {
 		log.Fatal(err)
 	}
+
+	return Credentials{Token: data.Token, Domain: room.Text()}
 }

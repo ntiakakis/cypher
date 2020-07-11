@@ -8,11 +8,6 @@ from .errors import Unauthorized, Forbidden, Ratelimited
 def check_token(token):
     if token is None:
         raise Unauthorized("Invalid token")
-    try:
-        if token.split(".")[0] != "cyphchat":
-            raise Unauthorized("Invalid token")
-    except IndexError:
-        raise Unauthorized("Invalid token")
 
     try:
         itsdangerous.TimestampSigner(os.getenv("TOKEN_SECRET")).unsign(token, max_age=60*60*24)

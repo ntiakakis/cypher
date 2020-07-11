@@ -13,12 +13,14 @@ func Register(domain, username, password, email string) string {
 
 	if err != nil {
 		log.Fatalln(err)
+		return ""
 	}
 
 	resp, err := http.Post("http://"+domain+"/users/register", "application/json", bytes.NewBuffer(_byte))
 
 	if err != nil {
 		log.Fatalln(err)
+		return ""
 	}
 
 	defer resp.Body.Close()
@@ -26,6 +28,7 @@ func Register(domain, username, password, email string) string {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)
+		return ""
 	}
 
 	return string(body)
