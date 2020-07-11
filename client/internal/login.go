@@ -1,11 +1,16 @@
 package internal
 
 import (
+	"encoding/json"
 	"log"
 
 	"edpasenidis.tech/cypher/internal/auth"
 	"github.com/marcusolsson/tui-go"
 )
+
+type LoginTokenBody struct {
+	Token string
+}
 
 func Login() {
 	logo := `
@@ -39,7 +44,13 @@ func Login() {
 	login := tui.NewButton("[Login]")
 	login.OnActivated(func(b *tui.Button) {
 		status.SetText("Logging in...")
-		status.SetText(auth.Login(room.Text(), user.Text(), password.Text()))
+		var data LoginTokenBody
+		err := json.Unmarshal([]byte(auth.Login(room.Text(), user.Text(), password.Text())), &data)
+		if err != nil {
+			status.SetText(err.Error())
+			return
+		}
+		status.SetText(data.Token)
 	})
 
 	havesAccount := false
@@ -52,7 +63,8 @@ func Login() {
 			form.AppendRow(email)
 			email.SetFocused(true)
 		} else {
-			status.SetText(auth.Register(room.Text(), user.Text(), password.Text(), email.Text()))
+			auth.Register(room.Text(), user.Text(), password.Text(), email.Text())
+			status.SetText("Registered")
 		}
 	})
 

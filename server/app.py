@@ -30,7 +30,7 @@ def generate():
         try:
             current_user = User.query.filter_by(username=data_user).first()
             if current_user and current_user.password == data_password:
-                return jsonify({"token": itsdangerous.TimestampSigner(app.config["SECRET_KEY"]).sign("cyphchat").decode()})
+                return jsonify({"token": itsdangerous.TimestampSigner(app.config["SECRET_KEY"]).sign(base64.b64encode(str(current_user.id).encode())).decode()})
             else:
                 return "Wrong credentials."
         except:

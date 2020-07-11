@@ -22,19 +22,21 @@ def register():
                 or request.json['username'] == ''):
             return "One or more of the required fields are missing"
         else:
-            print(request.json)
             data_username = request.json['username']
             data_password = request.json['password']
             data_email = request.json['email']
-
-            try:
-                current_user = user(username=data_username, password=data_password, email=data_email)
-                db.session.add(current_user)
-                db.session.commit()    
-                return "Registered! You can now login."
-            except:
-                traceback.print_exc()
-                return "Something went wrong."
+            
+            if bool(user.query.filter_by(username=data_username)) or bool(user.query.filter_by(email=data_email)):
+                return "User already exists", 400
+            else:
+                try:
+                    current_user = user(username=data_username, password=data_password, email=data_email)
+                    db.session.add(current_user)
+                    db.session.commit()    
+                    return "Registered! You can now login."
+                except:
+                    traceback.print_exc()
+                    return "Something went wrong."
     else:
         return "Method not allowed."
 
